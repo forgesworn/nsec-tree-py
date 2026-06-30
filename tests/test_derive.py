@@ -18,6 +18,7 @@ def test_vector_2_commerce_0():
     i = derive(ROOT, "commerce", 0)
     assert i.private_key.hex() == "fc62a2ec7f91970c485f9d7453268d1a6a07273ee829cf44c87685f78758f04f"
     assert i.public_key.hex()  == "8441f7e2a73fea0742ccd12858bd5b95ccae385fbcb2856b7d7177880198a663"
+    assert i.index == 0
 
 
 def test_vector_3_social_1():

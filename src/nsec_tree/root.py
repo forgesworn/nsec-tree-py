@@ -19,7 +19,7 @@ class TreeRoot:
     master_npub: str
 
     def destroy(self) -> None:
-        object.__setattr__(self, "secret", b"\x00" * len(self.secret))
+        self.secret = b"\x00" * len(self.secret)
 
 
 def from_nsec(nsec: str | bytes) -> TreeRoot:
