@@ -27,3 +27,11 @@ def test_zeroise_overwrites_private_key():
     identity = derive(root, "social", 0)
     zeroise(identity)
     assert identity.private_key == b"\x00" * 32
+
+
+def test_zeroise_also_blanks_nsec():
+    root = from_nsec(bytes.fromhex("01" * 32))
+    identity = derive(root, "social", 0)
+    zeroise(identity)
+    assert identity.private_key == b"\x00" * 32
+    assert identity.nsec == ""

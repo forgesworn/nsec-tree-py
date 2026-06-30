@@ -105,8 +105,9 @@ pub_raw = nsec_tree.encoding.decode_npub(social.npub)
 
 ### 7. Zeroisation
 
-Call `zeroise` to wipe an identity's private key bytes when it is no longer
-needed:
+Call `zeroise` to clear an identity's private key. This is best-effort —
+CPython cannot scrub immutable `bytes`/`str` in place; `zeroise` rebinds both
+`private_key` and `nsec` to cleared values and drops the references:
 
 ```python
 nsec_tree.zeroise(social)
@@ -134,7 +135,7 @@ Build a tree root from a bech32 `nsec` string or raw 32-byte key material.
 | `master_pubkey` | `bytes` | x-only public key (32 bytes) |
 | `master_npub` | `str` | bech32 npub of the master identity |
 
-`root.destroy()` overwrites `secret` with null bytes.
+`root.destroy()` is best-effort — rebinds `secret` to null bytes; CPython cannot scrub the original `bytes` object in place.
 
 ### `derive(root, purpose, index=0) -> Identity`
 
@@ -165,12 +166,15 @@ Return a dict mapping each purpose to a list of `Identity` objects for indices
 | `purpose` | `str` | Purpose string used in derivation |
 | `index` | `int` | Actual index used (may be higher than requested) |
 
-`Identity` is frozen (immutable). Call `zeroise(identity)` to wipe the private
-key bytes in place.
+`Identity` is frozen (immutable). Call `zeroise(identity)` for best-effort
+secret clearance — see `zeroise` below.
 
 ### `zeroise(identity: Identity) -> None`
 
-Overwrite `identity.private_key` with null bytes.
+Best-effort secret clearance — rebinds `private_key` to null bytes and `nsec`
+to `""`. CPython cannot scrub immutable `bytes`/`str` in place; the attribute
+is merely rebound and the original key material remains in memory until the
+garbage collector reclaims it.
 
 ### `encoding` module
 
@@ -185,10 +189,10 @@ Overwrite `identity.private_key` with null bytes.
 
 ## Conformance
 
-nsec-tree-py is **byte-identical** to the TypeScript
-[`nsec-tree`](https://github.com/forgesworn/nsec-tree) and Rust
-`heartwood-core` implementations. All three are verified against the frozen
-vectors in [PROTOCOL.md §6](https://github.com/forgesworn/nsec-tree/blob/main/PROTOCOL.md#6-test-vectors).
+nsec-tree-py is verified against the **nsec-path frozen vectors**
+([PROTOCOL.md §6.1–6.3](https://github.com/forgesworn/nsec-tree/blob/main/PROTOCOL.md#6-test-vectors)).
+Mnemonic-path vectors (§6.4–6.6) are not verified here — mnemonic-path
+derivation is deferred (see Roadmap).
 
 The canonical test-vector inputs (32 bytes of `0x01`):
 
@@ -215,7 +219,7 @@ vector 3 — purpose "social", index 1:
   child_pub   = aed0bc4ccccdb868156e38cabf3a6acb98f8fa8a4abe0dcc68851d8468a87cd1
 ```
 
-The full vector suite is exercised on every commit via `tests/test_vectors.py`.
+The nsec-path vector suite (§6.1–6.3) is exercised on every commit via `tests/test_vectors.py`.
 
 ---
 

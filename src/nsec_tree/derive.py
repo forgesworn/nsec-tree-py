@@ -38,8 +38,13 @@ def _derive_from_secret(tree_root_secret: bytes, purpose: str, index: int) -> tu
     raise IndexOverflow("index exceeded 2^32-1")
 
 
-def derive(root: "TreeRoot", purpose: str, index: int = 0) -> Identity:
-    validate_purpose(purpose)
-    priv, actual = _derive_from_secret(root.secret, purpose, index)
+def _materialise(secret_key: bytes, purpose: str, index: int) -> Identity:
+    """Build an Identity from a tree-root secret or parent private key."""
+    priv, actual = _derive_from_secret(secret_key, purpose, index)
     pub = x_only_pubkey(priv)
     return Identity(priv, pub, encode_nsec(priv), encode_npub(pub), purpose, actual)
+
+
+def derive(root: "TreeRoot", purpose: str, index: int = 0) -> Identity:
+    validate_purpose(purpose)
+    return _materialise(root.secret, purpose, index)

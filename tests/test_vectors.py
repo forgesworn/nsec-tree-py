@@ -37,7 +37,7 @@ VECTORS = [
         0,
         "fc62a2ec7f91970c485f9d7453268d1a6a07273ee829cf44c87685f78758f04f",
         "8441f7e2a73fea0742ccd12858bd5b95ccae385fbcb2856b7d7177880198a663",
-        None,
+        "nsec1l3329mrljxtscjzln469xf5drf4qwfe7aq5u73xgw6zl0p6c7p8sd6vumk",
         None,
     ),
     (
@@ -45,16 +45,15 @@ VECTORS = [
         1,
         "802a2fd31d25517bd2bb9b7196c377e6cc2f32728b916c2c3ea71ca703767917",
         "aed0bc4ccccdb868156e38cabf3a6acb98f8fa8a4abe0dcc68851d8468a87cd1",
-        None,
+        "nsec1sq4zl5cay4ghh54mndcedsmhumxz7vnj3wgkctp75uw2wqmk0yts3ny5vz",
         None,
     ),
 ]
 
 
-def test_frozen_vectors() -> None:
-    """Assert every PROTOCOL.md vector against the public API."""
+def test_root_secret() -> None:
+    """Assert root-level derivation against PROTOCOL.md §6.1–6.3 inputs."""
     root = from_nsec(NSEC)
-
     assert root.secret.hex() == EXPECTED_ROOT_SECRET, (
         f"root.secret mismatch: {root.secret.hex()}"
     )
@@ -62,6 +61,10 @@ def test_frozen_vectors() -> None:
         f"root.master_pubkey mismatch: {root.master_pubkey.hex()}"
     )
 
+
+def test_child_vectors() -> None:
+    """Assert every child vector from PROTOCOL.md §6.1–6.3 against the public API."""
+    root = from_nsec(NSEC)
     for purpose, index, cpriv, cpub, nsec, npub in VECTORS:
         identity = derive(root, purpose, index)
         assert identity.private_key.hex() == cpriv, (

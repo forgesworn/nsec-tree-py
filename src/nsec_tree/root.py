@@ -36,3 +36,4 @@ def from_nsec(nsec: str | bytes) -> TreeRoot:
 
 def zeroise(identity: Identity) -> None:
     object.__setattr__(identity, "private_key", b"\x00" * len(identity.private_key))
+    object.__setattr__(identity, "nsec", "")
