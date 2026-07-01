@@ -1,5 +1,6 @@
 """nsec-tree — deterministic Nostr sub-identity derivation (NIP-IDENTITY-TREES)."""
 from .root import from_nsec, TreeRoot, zeroise
+from .mnemonic import from_mnemonic
 from .derive import derive, Identity
 from .persona import (
     Persona,
@@ -36,6 +37,7 @@ from . import encoding
 __version__ = "0.1.0"
 __all__ = [
     "from_nsec",
+    "from_mnemonic",
     "TreeRoot",
     "zeroise",
     "derive",

@@ -26,6 +26,19 @@ pip install nsec-tree
 
 Requires Python 3.11 or later.
 
+### Mnemonic entry point (optional)
+
+```bash
+pip install nsec-tree[mnemonic]
+```
+
+```python
+root = nsec_tree.from_mnemonic("abandon abandon ... about")
+```
+
+The mnemonic path (BIP-39 → BIP-32 `m/44'/1237'/727'/0'/0'`) and the nsec path
+produce **different** tree roots from the same secret — choose one entry point.
+
 ---
 
 ## Quick start
@@ -189,6 +202,13 @@ root.destroy()
 
 Build a tree root from a bech32 `nsec` string or raw 32-byte key material.
 
+### `from_mnemonic(mnemonic: str, passphrase: str | None = None) -> TreeRoot`
+
+Build a tree root from a BIP-39 mnemonic phrase. Requires `pip install nsec-tree[mnemonic]`.
+Derives at `m/44'/1237'/727'/0'/0'` (all hardened); the resulting key is used directly as
+the tree-root secret (no extra HMAC — distinct from `from_nsec`).
+Raises `NsecTreeError` if the extra is not installed or the mnemonic is invalid.
+
 ### `TreeRoot`
 
 | Attribute | Type | Description |
@@ -309,10 +329,9 @@ The NIP-78 kind (`30078`) and the `d`-tag namespace prefix (`nsec-tree:`).
 
 ## Conformance
 
-nsec-tree-py is verified against the **nsec-path frozen vectors**
-([PROTOCOL.md §6.1–6.3](https://github.com/forgesworn/nsec-tree/blob/main/PROTOCOL.md#6-test-vectors)).
-Mnemonic-path vectors (§6.4–6.6) are not verified here — mnemonic-path
-derivation is deferred (see Roadmap).
+nsec-tree-py is verified against the **full frozen vector suite**
+([PROTOCOL.md §6.1–6.6](https://github.com/forgesworn/nsec-tree/blob/main/PROTOCOL.md#6-test-vectors)),
+covering both the nsec path (§6.1–6.3) and the mnemonic path (§6.4–6.6).
 
 The canonical test-vector inputs (32 bytes of `0x01`):
 
@@ -352,8 +371,7 @@ nsec-tree-py is `0.1.0`. It is:
 
 It has **not** had an independent security audit. Review it yourself before trusting it with high-value keys, and pin a version — the API may change before `1.0`. Two honest limits:
 
-- **Zeroisation is best-effort.** CPython cannot scrub immutable `bytes`/`str` in place; `zeroise` and `destroy` drop references but cannot guarantee the old bytes leave memory. Prefer short-lived secrets; do not rely on wiping.
-- The **mnemonic path** (§1.1) is not implemented (see Roadmap).
+- **Zeroisation is best-effort.** CPython cannot scrub immutable `bytes`/`str` in place; `zeroise` and `destroy` drop references but cannot guarantee the old bytes leave memory. Prefer short-lived secrets; do not rely on wiping. The mnemonic path additionally cannot scrub BIP-39/BIP-32 intermediate material (seed bytes) for the same reason.
 
 Report anything you find via [issues](https://github.com/forgesworn/nsec-tree-py/issues).
 
@@ -363,8 +381,6 @@ Report anything you find via [issues](https://github.com/forgesworn/nsec-tree-py
 
 The following features exist in the TypeScript reference but are **not yet ported**:
 
-- **Mnemonic-path derivation** (PROTOCOL.md §1.1) — BIP-39/BIP-32 entry point
-  (`m/44'/1237'/727'/0'/0'`)
 - **Persona convenience helpers** — batch persona recovery and a default persona-name
   list. Core persona derivation (`derive_persona`) and arbitrary-depth hierarchy
   (`derive_from_identity`) are already present; only the batch helpers are outstanding.

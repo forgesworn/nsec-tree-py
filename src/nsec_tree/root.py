@@ -22,6 +22,16 @@ class TreeRoot:
         self.secret = b"\x00" * len(self.secret)
 
 
+def _create_tree_root(secret: bytes) -> TreeRoot:
+    """Wrap a 32-byte root secret as a TreeRoot (computes master pubkey/npub).
+
+    No HMAC here — the caller supplies the final tree-root secret. `from_nsec`
+    HMACs first; `from_mnemonic` derives via BIP-32 and passes the key directly.
+    """
+    master = x_only_pubkey(secret)
+    return TreeRoot(secret, master, encode_npub(master))
+
+
 def from_nsec(nsec: str | bytes) -> TreeRoot:
     if isinstance(nsec, str):
         nsec_bytes = decode_nsec(nsec)
@@ -30,8 +40,7 @@ def from_nsec(nsec: str | bytes) -> TreeRoot:
     if len(nsec_bytes) != 32:
         raise InvalidKey("nsec must decode to 32 bytes")
     secret = hmac.new(nsec_bytes, _ROOT_LABEL, hashlib.sha256).digest()
-    master = x_only_pubkey(secret)
-    return TreeRoot(secret, master, encode_npub(master))
+    return _create_tree_root(secret)
 
 
 def zeroise(identity: Identity) -> None:
