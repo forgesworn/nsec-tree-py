@@ -11,6 +11,11 @@ Each child key is a fully usable Nostr identity (nsec + npub) bound to a
 human-readable **purpose** string and a numeric **index**. Children are
 cryptographically unlinkable without an explicit linkage proof.
 
+> **Status: `0.1.0`.** Conformance-tested against the frozen protocol vectors and
+> cross-verified against the TypeScript reference, but **not independently
+> audited**. See [Status & security](#status--security) before using it to protect
+> high-value keys.
+
 ---
 
 ## Install
@@ -285,6 +290,22 @@ vector 3 — purpose "social", index 1:
 ```
 
 The nsec-path vector suite (§6.1–6.3) is exercised on every commit via `tests/test_vectors.py`.
+
+---
+
+## Status & security
+
+nsec-tree-py is `0.1.0`. It is:
+
+- **Conformance-tested** against the frozen `PROTOCOL.md` vectors (§6.1–6.3) on every commit; and
+- **Interop-verified** — its linkage proofs are cross-checked against the TypeScript `nsec-tree` (@noble) in both directions, with a genuine reference signature frozen into the test suite.
+
+It has **not** had an independent security audit. Review it yourself before trusting it with high-value keys, and pin a version — the API may change before `1.0`. Two honest limits:
+
+- **Zeroisation is best-effort.** CPython cannot scrub immutable `bytes`/`str` in place; `zeroise` and `destroy` drop references but cannot guarantee the old bytes leave memory. Prefer short-lived secrets; do not rely on wiping.
+- The **mnemonic path** (§1.1) is not implemented (see Roadmap).
+
+Report anything you find via [issues](https://github.com/forgesworn/nsec-tree-py/issues).
 
 ---
 
