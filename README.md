@@ -103,7 +103,35 @@ back = nsec_tree.encoding.encode_nsec(raw)  # roundtrips exactly
 pub_raw = nsec_tree.encoding.decode_npub(social.npub)
 ```
 
-### 7. Zeroisation
+### 7. Linkage proofs
+
+A linkage proof lets the master identity prove ownership of a child key — either
+*blind* (proving ownership without revealing purpose/index) or *full* (revealing
+the derivation parameters). Proofs are BIP-340 Schnorr signatures over a
+pipe-delimited attestation string, **cross-verified interoperable with the
+TypeScript `nsec-tree` (@noble) implementation**.
+
+```python
+import nsec_tree
+
+root = nsec_tree.from_nsec("nsec1...")
+child = nsec_tree.derive(root, "social")
+
+# Blind proof — proves master → child without revealing purpose or index
+blind = nsec_tree.create_blind_proof(root, child)
+assert nsec_tree.verify_proof(blind)
+
+# Full proof — reveals purpose and index
+full = nsec_tree.create_full_proof(root, child)
+assert nsec_tree.verify_proof(full)
+
+# Serialise / deserialise (camelCase wire format, compatible with TS impl)
+wire = nsec_tree.proof_to_dict(full)
+restored = nsec_tree.proof_from_dict(wire)
+assert nsec_tree.verify_proof(restored)
+```
+
+### 8. Zeroisation
 
 Call `zeroise` to clear an identity's private key. This is best-effort —
 CPython cannot scrub immutable `bytes`/`str` in place; `zeroise` rebinds both
@@ -176,6 +204,43 @@ to `""`. CPython cannot scrub immutable `bytes`/`str` in place; the attribute
 is merely rebound and the original key material remains in memory until the
 garbage collector reclaims it.
 
+### `create_blind_proof(root, child) -> LinkageProof`
+
+Create a blind linkage proof — proves that the master key owns the child key
+without revealing the purpose string or index.
+
+### `create_full_proof(root, child) -> LinkageProof`
+
+Create a full linkage proof — reveals purpose and index alongside the Schnorr
+attestation. Raises `InvalidPurpose` if the purpose contains `|` or control
+characters (which would break the pipe-delimited attestation format).
+
+### `verify_proof(proof: LinkageProof) -> bool`
+
+Verify a linkage proof. Returns `False` (never raises) for any invalid or
+tampered proof.
+
+### `LinkageProof`
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `master_pubkey` | `str` | Lowercase hex x-only master public key (64 chars) |
+| `child_pubkey` | `str` | Lowercase hex x-only child public key (64 chars) |
+| `attestation` | `str` | The signed attestation string |
+| `signature` | `str` | Lowercase hex BIP-340 Schnorr signature (128 chars) |
+| `purpose` | `str \| None` | Purpose string (full proofs only) |
+| `index` | `int \| None` | Derivation index (full proofs only) |
+
+`LinkageProof` is frozen (immutable).
+
+### `proof_to_dict(proof) -> dict`
+
+Serialise to the camelCase wire format exchanged with the TypeScript implementation.
+
+### `proof_from_dict(d: dict) -> LinkageProof`
+
+Deserialise from the camelCase wire format.
+
 ### `encoding` module
 
 | Function | Description |
@@ -227,8 +292,6 @@ The nsec-path vector suite (§6.1–6.3) is exercised on every commit via `tests
 
 The following features are **planned but not yet implemented**:
 
-- **Linkage proofs** (PROTOCOL.md §5) — blind and full Schnorr attestations
-  proving master→child ownership
 - **Mnemonic-path derivation** (PROTOCOL.md §1.1) — BIP-39/BIP-32 entry point
   (`m/44'/1237'/727'/0'/0'`)
 
