@@ -12,8 +12,11 @@ from .root import TreeRoot
 from .validate import validate_proof_purpose
 
 _MAX_INDEX = 0xFFFFFFFF
-_HEX_KEY = re.compile(r"^[0-9a-f]{64}$")
-_HEX_SIG = re.compile(r"^[0-9a-f]{128}$")
+# `\Z` (not `$`): Python's `$` also matches just before a trailing newline,
+# whereas JavaScript's `$` does not. `\Z` anchors at the very end of the string,
+# matching the TS reference (rejects e.g. a 64-hex key with a trailing "\n").
+_HEX_KEY = re.compile(r"^[0-9a-f]{64}\Z")
+_HEX_SIG = re.compile(r"^[0-9a-f]{128}\Z")
 
 
 @dataclass(frozen=True)

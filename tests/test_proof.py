@@ -7,6 +7,7 @@ from nsec_tree import from_nsec, derive
 from nsec_tree.errors import InvalidPurpose
 from nsec_tree.proof import (
     LinkageProof,
+    canonical_attestation,
     create_blind_proof,
     create_full_proof,
     verify_proof,
@@ -236,3 +237,22 @@ def test_noble_full_fixture_verifies():
 def test_noble_full_wire_roundtrip():
     """proof_to_dict(proof_from_dict(TS_FULL)) must equal TS_FULL exactly."""
     assert proof_to_dict(proof_from_dict(TS_FULL)) == TS_FULL
+
+
+# ---------------------------------------------------------------------------
+# Trailing-newline strictness — Python's `$` matches before a trailing "\n"
+# but JavaScript's `$` does not; the hex validators anchor with `\Z` so a
+# trailing-newline key is rejected like the TS reference. (Cross-impl parity.)
+# ---------------------------------------------------------------------------
+
+def test_canonical_attestation_rejects_trailing_newline_pubkey():
+    root = _root()
+    proof = create_blind_proof(root, _child(root))
+    bad = LinkageProof(
+        master_pubkey=proof.master_pubkey + "\n",
+        child_pubkey=proof.child_pubkey,
+        attestation=proof.attestation,
+        signature=proof.signature,
+    )
+    assert canonical_attestation(bad) is None
+    assert verify_proof(bad) is False
