@@ -34,8 +34,10 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/).
   built-in exceptions:
   - `from_event`: raises `NsecTreeError` on missing `pubkey`/`tags`, non-list `tags`,
     and oversized index (was `KeyError`/`TypeError`/`ValueError`).
-  - `derive`: rejects non-integer and `bool` index values, and raises `NsecTreeError`
-    on out-of-range indices (was `OverflowError`/`AttributeError`).
-  - `from_nsec`: raises `NsecTreeError` on non-str/bytes input (was `TypeError`).
-  - Non-string purpose values now raise `NsecTreeError` across all entry points
-    (was `TypeError`/`AttributeError`).
+  - `derive`: rejects non-integer and `bool` index values (`InvalidKey`), and raises
+    `IndexOverflow` on out-of-range indices (was `OverflowError`/`AttributeError`).
+    Both are `NsecTreeError` subtypes.
+  - `from_nsec`: raises `InvalidKey` on non-str/bytes/bytearray input
+    (`NsecTreeError` subtype; was `TypeError`).
+  - Non-string purpose values now raise `InvalidPurpose` (`NsecTreeError` subtype)
+    across all entry points (was `TypeError`/`AttributeError`).

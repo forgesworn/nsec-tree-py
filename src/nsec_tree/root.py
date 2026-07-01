@@ -34,7 +34,7 @@ def _create_tree_root(secret: bytes) -> TreeRoot:
 
 def from_nsec(nsec: str | bytes) -> TreeRoot:
     if not isinstance(nsec, (str, bytes, bytearray)):
-        raise InvalidKey("nsec must be a str or bytes")
+        raise InvalidKey("nsec must be a str, bytes, or bytearray")
     if isinstance(nsec, str):
         nsec_bytes = decode_nsec(nsec)
     else:
