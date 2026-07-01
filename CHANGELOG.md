@@ -2,6 +2,19 @@
 
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.0.1] — 2026-07-01
+
+Documentation and packaging only — no code or behaviour changes.
+
+### Documentation
+- README: PyPI / Python-versions / licence badges, a features and cross-implementation-parity
+  summary, a Licence section, and a note that a 61-case differential suite proves TS parity.
+- Added `llms.txt` — a condensed, machine-readable API summary (with common-mistake notes)
+  for LLM and coding-agent consumers.
+
+### Packaging
+- `pyproject` metadata: Changelog URL, author email, and `mnemonic` / `bip-39` / `nip-78` keywords.
+
 ## [1.0.0] — 2026-07-01
 
 ### Added
