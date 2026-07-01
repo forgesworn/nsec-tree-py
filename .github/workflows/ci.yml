@@ -1,10 +1,8 @@
 name: CI
-
 on:
   push:
     branches: [main]
   pull_request:
-
 jobs:
   test:
     name: Test (Python ${{ matrix.python-version }})
@@ -12,24 +10,27 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12"]
-
+        python-version: ["3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Install package and dev dependencies
-        run: pip install -e ".[dev]"
-
+      - name: Install (with mnemonic extra)
+        run: pip install -e ".[dev,mnemonic]"
       - name: Lint (ruff)
         run: ruff check .
-
       - name: Type-check (mypy)
         run: mypy src
-
-      - name: Test (pytest)
-        run: pytest
+      - name: Test (pytest + coverage)
+        run: pytest --cov=nsec_tree --cov-report=term-missing --cov-fail-under=90
+      - name: Verify from_mnemonic errors cleanly without the extra
+        run: |
+          pip uninstall -y mnemonic bip32
+          python -c "
+          import nsec_tree
+          try:
+              nsec_tree.from_mnemonic('abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about')
+              raise SystemExit('expected NsecTreeError')
+          except nsec_tree.errors.NsecTreeError as e:
+              assert 'nsec-tree[mnemonic]' in str(e); print('ok:', e)"

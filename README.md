@@ -11,10 +11,10 @@ Each child key is a fully usable Nostr identity (nsec + npub) bound to a
 human-readable **purpose** string and a numeric **index**. Children are
 cryptographically unlinkable without an explicit linkage proof.
 
-> **Status: `0.1.0`.** Conformance-tested against the frozen protocol vectors and
-> cross-verified against the TypeScript reference, but **not independently
-> audited**. See [Status & security](#status--security) before using it to protect
-> high-value keys.
+> **Status: `1.0.0`** — conformance-tested against the full frozen vector suite (§6.1–6.6),
+> cross-verified against the TypeScript reference, not independently audited.
+> Semantic versioning; breaking changes only on major bumps.
+> See [Status & security](#status--security) before using it to protect high-value keys.
 
 ---
 
@@ -224,9 +224,32 @@ Raises `NsecTreeError` if the extra is not installed or the mnemonic is invalid.
 Derive a child identity. Raises `IndexOverflow` if every index up to
 `0xFFFFFFFF` fails the curve-order check (astronomically unlikely in practice).
 
-### `derive_persona(root, name, index=0) -> Identity`
+### `derive_persona(root, name, index=0) -> Persona`
 
-Derive the child at purpose `nostr:persona:<name>`.
+Derive the child at purpose `nostr:persona:<name>`. Returns a `Persona` — see below.
+
+### `Persona`
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `identity` | `Identity` | The derived Nostr identity |
+| `name` | `str` | The persona name (without the `nostr:persona:` prefix) |
+| `index` | `int` | Actual index used (may be higher than requested) |
+
+`Persona` is frozen (immutable). Access the Nostr keys via `persona.identity.nsec` / `persona.identity.npub`.
+
+### `derive_from_persona(persona, purpose, index=0) -> Identity`
+
+Derive a sub-identity within a persona (two-level hierarchy). Uses the persona's
+private key as the HMAC key for a further derivation step — matching
+`derive_from_identity` but taking a `Persona` directly.
+
+### `recover_personas(root, names=DEFAULT_PERSONA_NAMES, scan_range=1) -> dict[str, list[Persona]]`
+
+Scan a range of indices to reconstruct previously derived personas from a list
+of known names. Returns a dict mapping each name to a list of `Persona` objects
+for indices `0 .. scan_range-1`. `names` defaults to `DEFAULT_PERSONA_NAMES`
+(`personal`, `bitcoiner`, `work`, `social`, `anonymous`).
 
 ### `derive_from_identity(identity, purpose, index=0) -> Identity`
 
@@ -364,26 +387,16 @@ The nsec-path vector suite (§6.1–6.3) is exercised on every commit via `tests
 
 ## Status & security
 
-nsec-tree-py is `0.1.0`. It is:
+nsec-tree-py is `1.0.0`. It is:
 
-- **Conformance-tested** against the frozen `PROTOCOL.md` vectors (§6.1–6.3) on every commit; and
+- **Conformance-tested** against the frozen `PROTOCOL.md` vectors (§6.1–6.6) on every commit; and
 - **Interop-verified** — its linkage proofs *and* NIP-78 event tags are cross-checked against the TypeScript `nsec-tree` (@noble) in both directions, with genuine reference outputs frozen into the test suite.
 
-It has **not** had an independent security audit. Review it yourself before trusting it with high-value keys, and pin a version — the API may change before `1.0`. Two honest limits:
+It has **not** had an independent security audit. Review it yourself before trusting it with high-value keys. Two honest limits:
 
 - **Zeroisation is best-effort.** CPython cannot scrub immutable `bytes`/`str` in place; `zeroise` and `destroy` drop references but cannot guarantee the old bytes leave memory. Prefer short-lived secrets; do not rely on wiping. The mnemonic path additionally cannot scrub BIP-39/BIP-32 intermediate material (seed bytes) for the same reason.
 
 Report anything you find via [issues](https://github.com/forgesworn/nsec-tree-py/issues).
-
----
-
-## Roadmap
-
-The following features exist in the TypeScript reference but are **not yet ported**:
-
-- **Persona convenience helpers** — batch persona recovery and a default persona-name
-  list. Core persona derivation (`derive_persona`) and arbitrary-depth hierarchy
-  (`derive_from_identity`) are already present; only the batch helpers are outstanding.
 
 ---
 

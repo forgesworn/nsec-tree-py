@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "nsec-tree"
-version = "0.1.0"
+version = "1.0.0"
 description = "Deterministic Nostr sub-identity derivation (NIP-IDENTITY-TREES) — Python"
 readme = "README.md"
 license = { text = "MIT" }
@@ -16,12 +16,13 @@ keywords = [
   "secp256k1", "schnorr", "bech32", "nip-19", "linkage-proof", "sub-identity",
 ]
 classifiers = [
-  "Development Status :: 4 - Beta",
+  "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: Security :: Cryptography",
   "Typing :: Typed",
 ]
