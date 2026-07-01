@@ -18,3 +18,18 @@ def test_subtree_uses_child_secret():
     # deterministic + distinct from a root-level derive of the same purpose
     assert sub.private_key == derive_from_identity(child, "payroll").private_key
     assert sub.private_key != derive(ROOT, "payroll").private_key
+
+
+def test_derive_from_identity_matches_ts_reference():
+    """Hierarchy must match the TypeScript reference byte-for-byte.
+
+    `derive_from_identity` runs the parent key through `from_nsec` (the
+    `nsec-tree-root` HMAC) before deriving — the same two-layer step as TS
+    `deriveFromIdentity`. Frozen from genuine TS output for
+    from_nsec(0x01*32) -> derive("social") -> derive_from_identity("commerce").
+    """
+    social = derive(ROOT, "social", 0)
+    sub = derive_from_identity(social, "commerce", 0)
+    assert sub.npub == "npub1tjetxpsqdreul7xllhfz6x2leelp9p65t7364n8n5xcdw3eqrw0qad9gwz"
+    assert sub.nsec == "nsec1ll3y9vpc7cm5kfvefzzqge2z6zg4vthxa4qr206wuuy6jvs74lzsq9agkg"
+    assert sub.public_key.hex() == "5cb2b3060068f3cff8dffdd22d195fce7e1287545fa3aaccf3a1b0d747201b9e"
