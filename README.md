@@ -1,6 +1,9 @@
 # nsec-tree-py
 
+[![PyPI](https://img.shields.io/pypi/v/nsec-tree)](https://pypi.org/project/nsec-tree/)
+[![Python](https://img.shields.io/pypi/pyversions/nsec-tree)](https://pypi.org/project/nsec-tree/)
 [![CI](https://github.com/forgesworn/nsec-tree-py/actions/workflows/ci.yml/badge.svg)](https://github.com/forgesworn/nsec-tree-py/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 Deterministic Nostr sub-identity derivation — Python implementation of the
 [nsec-tree protocol](https://github.com/forgesworn/nsec-tree/blob/main/PROTOCOL.md)
@@ -10,6 +13,16 @@ Derives a tree of independent secp256k1 key pairs from a single master nsec.
 Each child key is a fully usable Nostr identity (nsec + npub) bound to a
 human-readable **purpose** string and a numeric **index**. Children are
 cryptographically unlinkable without an explicit linkage proof.
+
+- **Deterministic and cross-implementation.** The same `(purpose, index)` yields the
+  same key in the Python, TypeScript, and Rust implementations — asserted byte-for-byte
+  by a frozen 61-case differential suite against the TypeScript v1.5.1 reference.
+- **Two entry points.** Derive from a Nostr `nsec`, or from a BIP-39 mnemonic
+  (`pip install nsec-tree[mnemonic]`).
+- **Unlinkable children, provable on demand.** Independent identities that link only
+  with an explicit BIP-340 Schnorr **linkage proof** (blind or full), publishable as a
+  NIP-78 event.
+- **Typed and lean.** Ships `py.typed`; depends only on `coincurve` and `bech32`. MIT.
 
 > **Status: `1.0.0`** — conformance-tested against the full frozen vector suite (§6.1–6.6),
 > cross-verified against the TypeScript reference, not independently audited.
@@ -381,7 +394,11 @@ vector 3 — purpose "social", index 1:
   child_pub   = aed0bc4ccccdb868156e38cabf3a6acb98f8fa8a4abe0dcc68851d8468a87cd1
 ```
 
-The nsec-path vector suite (§6.1–6.3) is exercised on every commit via `tests/test_vectors.py`.
+The protocol vectors run on every commit (`tests/test_vectors.py`, `tests/test_mnemonic.py`).
+Separately, a **61-case differential suite** (`tests/test_reference_vectors.py`) asserts
+byte-for-byte equality with the TypeScript **v1.5.1** reference across every public
+function — derivation, personas, hierarchy, linkage proofs, and NIP-78 events — so parity
+is proven, not assumed.
 
 ---
 
@@ -410,7 +427,17 @@ MIT-licensed. If nsec-tree-py saves you time, consider a tip:
 
 ---
 
+## Licence
+
+MIT — see [LICENSE](LICENSE). Copyright © TheCryptoDonkey.
+
+---
+
 ## Part of the ForgeSworn toolkit
 
 nsec-tree-py is the Python port of [`forgesworn/nsec-tree`](https://github.com/forgesworn/nsec-tree),
-the canonical TypeScript implementation of the nsec-tree protocol.
+the canonical TypeScript implementation of the nsec-tree protocol. A Rust implementation
+exists too; all three produce identical keys for the same inputs.
+
+For LLM and coding-agent consumers, a condensed machine-readable summary lives at
+[`llms.txt`](llms.txt).

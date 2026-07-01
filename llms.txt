@@ -1,0 +1,57 @@
+# nsec-tree
+
+> Deterministic Nostr sub-identity derivation for Python. From one master secret it
+> derives a tree of independent secp256k1 key pairs — each a usable Nostr `nsec`/`npub` —
+> addressed by a human-readable purpose string and a numeric index. Children are
+> unlinkable without an explicit BIP-340 Schnorr linkage proof. It is a faithful,
+> byte-for-byte cross-verified port of the TypeScript reference `nsec-tree` (v1.5.1): the
+> same `(purpose, index)` yields the same key in the Python, TypeScript, and Rust
+> implementations.
+
+Install: `pip install nsec-tree` (add the `[mnemonic]` extra — `pip install nsec-tree[mnemonic]` —
+for the BIP-39 entry point). Python 3.11+. MIT. Import as `import nsec_tree`.
+
+## Core model
+
+- Build a `TreeRoot` once from a master secret, then derive any number of child `Identity` objects from it.
+- A child is addressed by a `purpose` string (non-empty, ≤255 UTF-8 bytes, no null bytes, not whitespace-only, case-sensitive, byte-exact) and an integer `index` (0 .. 2**32-1).
+- Children are independent and unlinkable; prove a master→child link only with a `LinkageProof`.
+- Two entry points give **different** roots from the same secret — choose one: `from_nsec` (HMACs the nsec into the root) and `from_mnemonic` (BIP-39 → BIP-32 `m/44'/1237'/727'/0'/0'`, derived key used directly).
+
+## API
+
+- `from_nsec(nsec: str | bytes) -> TreeRoot` — from a bech32 `nsec` or 32 raw bytes.
+- `from_mnemonic(mnemonic: str, passphrase: str | None = None) -> TreeRoot` — needs the `[mnemonic]` extra; raises `NsecTreeError` if absent or the mnemonic is invalid.
+- `derive(root, purpose: str, index: int = 0) -> Identity`.
+- `derive_persona(root, name: str, index: int = 0) -> Persona` — child at purpose `nostr:persona:<name>`. Returns a `Persona`, not an `Identity`.
+- `derive_from_identity(identity, purpose, index=0) -> Identity` and `derive_from_persona(persona, purpose, index=0) -> Identity` — arbitrary-depth hierarchy (the parent private key is re-HMACed via `from_nsec` before deriving).
+- `recover(root, purposes: list[str], scan_range=20) -> dict[str, list[Identity]]`.
+- `recover_personas(root, names=DEFAULT_PERSONA_NAMES, scan_range=1) -> dict[str, list[Persona]]`.
+- `create_blind_proof(root, child) -> LinkageProof` and `create_full_proof(root, child) -> LinkageProof`.
+- `verify_proof(proof) -> bool` — returns `False` (never raises) for any invalid or tampered proof.
+- `proof_to_dict(proof) -> dict` and `proof_from_dict(d) -> LinkageProof` — camelCase wire format, interoperable with the TypeScript implementation.
+- `to_unsigned_event(proof, created_at=None) -> UnsignedEvent` and `from_event(event) -> LinkageProof` — NIP-78 (kind 30078) event wrapping/unwrapping.
+- `zeroise(identity) -> None` and `root.destroy()` — best-effort secret clearance.
+- `encoding.encode_nsec/decode_nsec/encode_npub/decode_npub` — bech32 codecs.
+- Types: `TreeRoot`, `Identity(private_key, public_key, nsec, npub, purpose, index)`, `Persona(identity, name, index)`, `LinkageProof`, `UnsignedEvent`.
+- Errors (all subclass `NsecTreeError`): `InvalidKey`, `InvalidPurpose`, `IndexOverflow`.
+- Constants: `DEFAULT_PERSONA_NAMES`, `MAX_INDEX`, `DEFAULT_SCAN_RANGE`, `MAX_SCAN_RANGE`, `MAX_RECOVERY_PURPOSES`, `NSEC_TREE_EVENT_KIND` (30078), `NSEC_TREE_D_PREFIX`.
+
+## Gotchas (common mistakes)
+
+- `derive_persona` returns a `Persona`, NOT an `Identity`. Access the keys via `persona.identity.nsec` / `persona.identity.npub`.
+- `from_nsec` and `from_mnemonic` produce different roots from the same underlying secret — they are not interchangeable.
+- `Identity.index` may be higher than the requested index (a curve-order rejection advances it); read the actual value off the returned object.
+- `verify_proof` returns a bool and never raises — do not wrap it in `try/except` expecting an exception.
+- `from_mnemonic` needs `pip install nsec-tree[mnemonic]`; calling it without the extra raises `NsecTreeError`.
+- Zeroisation is best-effort only (CPython cannot scrub immutable `bytes`/`str`); do not rely on it for secret hygiene.
+- Same-name personas and the same `(purpose, index)` reproduce identical keys across the Python, TypeScript, and Rust implementations.
+
+## Links
+
+- README / source: https://github.com/forgesworn/nsec-tree-py
+- PyPI: https://pypi.org/project/nsec-tree/
+- Protocol spec with frozen vectors: https://github.com/forgesworn/nsec-tree/blob/main/PROTOCOL.md
+- TypeScript reference implementation: https://github.com/forgesworn/nsec-tree
+- Changelog: https://github.com/forgesworn/nsec-tree-py/blob/main/CHANGELOG.md
+- Security policy: https://github.com/forgesworn/nsec-tree-py/blob/main/SECURITY.md
