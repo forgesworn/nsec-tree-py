@@ -68,9 +68,11 @@ A persona is a convenience wrapper over `derive` that uses the reserved
 
 ```python
 writer = nsec_tree.derive_persona(root, "writer")
+print(writer.name)          # "writer"
+print(writer.identity.npub) # the derived Nostr identity
 
-print(writer.purpose)  # "nostr:persona:writer"
-print(writer.npub)
+# Recover known personas across an index range
+found = nsec_tree.recover_personas(root, ["writer", "work"], scan_range=5)
 ```
 
 Personas derived with the same name in any conformant nsec-tree implementation

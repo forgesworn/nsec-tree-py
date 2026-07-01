@@ -1,7 +1,19 @@
 """nsec-tree — deterministic Nostr sub-identity derivation (NIP-IDENTITY-TREES)."""
 from .root import from_nsec, TreeRoot, zeroise
 from .derive import derive, Identity
-from .persona import derive_persona, derive_from_identity
+from .persona import (
+    Persona,
+    derive_persona,
+    derive_from_identity,
+    derive_from_persona,
+    recover_personas,
+    validate_persona_name,
+    DEFAULT_PERSONA_NAMES,
+    MAX_INDEX,
+    DEFAULT_SCAN_RANGE,
+    MAX_SCAN_RANGE,
+    MAX_RECOVERY_PURPOSES,
+)
 from .recover import recover
 from .errors import NsecTreeError, InvalidKey, InvalidPurpose, IndexOverflow
 from .proof import (
@@ -28,8 +40,17 @@ __all__ = [
     "zeroise",
     "derive",
     "Identity",
+    "Persona",
     "derive_persona",
     "derive_from_identity",
+    "derive_from_persona",
+    "recover_personas",
+    "validate_persona_name",
+    "DEFAULT_PERSONA_NAMES",
+    "MAX_INDEX",
+    "DEFAULT_SCAN_RANGE",
+    "MAX_SCAN_RANGE",
+    "MAX_RECOVERY_PURPOSES",
     "recover",
     "encoding",
     "NsecTreeError",
