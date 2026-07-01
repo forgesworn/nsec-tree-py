@@ -4,6 +4,14 @@ from .derive import derive, Identity
 from .persona import derive_persona, derive_from_identity
 from .recover import recover
 from .errors import NsecTreeError, InvalidKey, InvalidPurpose, IndexOverflow
+from .proof import (
+    LinkageProof,
+    create_blind_proof,
+    create_full_proof,
+    verify_proof,
+    proof_to_dict,
+    proof_from_dict,
+)
 from . import encoding
 
 __version__ = "0.1.0"
@@ -21,4 +29,10 @@ __all__ = [
     "InvalidKey",
     "InvalidPurpose",
     "IndexOverflow",
+    "LinkageProof",
+    "create_blind_proof",
+    "create_full_proof",
+    "verify_proof",
+    "proof_to_dict",
+    "proof_from_dict",
 ]
