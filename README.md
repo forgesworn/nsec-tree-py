@@ -136,7 +136,34 @@ restored = nsec_tree.proof_from_dict(wire)
 assert nsec_tree.verify_proof(restored)
 ```
 
-### 8. Zeroisation
+### 8. Publish a proof as a Nostr event (NIP-78)
+
+A linkage proof can be wrapped as an unsigned NIP-78 (Kind `30078`) Nostr event,
+signed and published with your own Nostr library, then parsed back later. The tag
+layout is interoperable with the TypeScript `nsec-tree` implementation.
+
+```python
+import dataclasses
+import nsec_tree
+
+root = nsec_tree.from_nsec("nsec1...")
+child = nsec_tree.derive(root, "social")
+proof = nsec_tree.create_full_proof(root, child)
+
+# Wrap → an unsigned event; sign/publish it with your Nostr client
+event = nsec_tree.to_unsigned_event(proof)
+event_dict = dataclasses.asdict(event)   # {kind, pubkey, created_at, tags, content}
+
+# Parse a received event back into a proof, then verify
+restored = nsec_tree.from_event(event_dict)   # also accepts the UnsignedEvent directly
+assert nsec_tree.verify_proof(restored)
+```
+
+`to_unsigned_event` does not sign — it produces the unsigned event for your Nostr
+library to finalise. `from_event` rejects duplicate nsec-tree tags (a
+"duplicate-tag smuggling" guard) and malformed fields.
+
+### 9. Zeroisation
 
 Call `zeroise` to clear an identity's private key. This is best-effort —
 CPython cannot scrub immutable `bytes`/`str` in place; `zeroise` rebinds both
@@ -246,6 +273,27 @@ Serialise to the camelCase wire format exchanged with the TypeScript implementat
 
 Deserialise from the camelCase wire format.
 
+### `to_unsigned_event(proof, created_at=None) -> UnsignedEvent`
+
+Wrap a `LinkageProof` as an unsigned NIP-78 (Kind 30078) Nostr event. `created_at`
+defaults to the current Unix time; pass it explicitly for deterministic output.
+Raises `NsecTreeError` if the proof is structurally malformed.
+
+### `from_event(event) -> LinkageProof`
+
+Extract a `LinkageProof` from a NIP-78 event — accepts an `UnsignedEvent` or a mapping
+with `pubkey` and `tags`. Raises `NsecTreeError` on missing, duplicate, or malformed
+tags. Pass the result to `verify_proof`.
+
+### `UnsignedEvent`
+
+Frozen dataclass whose fields are the Nostr event JSON keys — `kind`, `pubkey`,
+`created_at`, `tags`, `content` — so `dataclasses.asdict(ev)` is a ready-to-sign event.
+
+### `NSEC_TREE_EVENT_KIND` / `NSEC_TREE_D_PREFIX`
+
+The NIP-78 kind (`30078`) and the `d`-tag namespace prefix (`nsec-tree:`).
+
 ### `encoding` module
 
 | Function | Description |
@@ -298,7 +346,7 @@ The nsec-path vector suite (§6.1–6.3) is exercised on every commit via `tests
 nsec-tree-py is `0.1.0`. It is:
 
 - **Conformance-tested** against the frozen `PROTOCOL.md` vectors (§6.1–6.3) on every commit; and
-- **Interop-verified** — its linkage proofs are cross-checked against the TypeScript `nsec-tree` (@noble) in both directions, with a genuine reference signature frozen into the test suite.
+- **Interop-verified** — its linkage proofs *and* NIP-78 event tags are cross-checked against the TypeScript `nsec-tree` (@noble) in both directions, with genuine reference outputs frozen into the test suite.
 
 It has **not** had an independent security audit. Review it yourself before trusting it with high-value keys, and pin a version — the API may change before `1.0`. Two honest limits:
 
@@ -311,10 +359,13 @@ Report anything you find via [issues](https://github.com/forgesworn/nsec-tree-py
 
 ## Roadmap
 
-The following features are **planned but not yet implemented**:
+The following features exist in the TypeScript reference but are **not yet ported**:
 
 - **Mnemonic-path derivation** (PROTOCOL.md §1.1) — BIP-39/BIP-32 entry point
   (`m/44'/1237'/727'/0'/0'`)
+- **Persona convenience helpers** — batch persona recovery and a default persona-name
+  list. Core persona derivation (`derive_persona`) and arbitrary-depth hierarchy
+  (`derive_from_identity`) are already present; only the batch helpers are outstanding.
 
 ---
 

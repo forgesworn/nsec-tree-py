@@ -12,6 +12,13 @@ from .proof import (
     proof_to_dict,
     proof_from_dict,
 )
+from .event import (
+    UnsignedEvent,
+    to_unsigned_event,
+    from_event,
+    NSEC_TREE_EVENT_KIND,
+    NSEC_TREE_D_PREFIX,
+)
 from . import encoding
 
 __version__ = "0.1.0"
@@ -35,4 +42,9 @@ __all__ = [
     "verify_proof",
     "proof_to_dict",
     "proof_from_dict",
+    "UnsignedEvent",
+    "to_unsigned_event",
+    "from_event",
+    "NSEC_TREE_EVENT_KIND",
+    "NSEC_TREE_D_PREFIX",
 ]
