@@ -11,9 +11,30 @@ license = { text = "MIT" }
 requires-python = ">=3.11"
 authors = [{ name = "TheCryptoDonkey" }]
 dependencies = ["coincurve>=18", "bech32>=1.2"]
+keywords = [
+  "nostr", "nsec", "npub", "identity", "key-derivation", "deterministic",
+  "secp256k1", "schnorr", "bech32", "nip-19", "linkage-proof", "sub-identity",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Security :: Cryptography",
+  "Typing :: Typed",
+]
 
 [project.optional-dependencies]
 dev = ["pytest", "ruff", "mypy"]
+
+[project.urls]
+Homepage = "https://github.com/forgesworn/nsec-tree-py"
+Repository = "https://github.com/forgesworn/nsec-tree-py"
+Issues = "https://github.com/forgesworn/nsec-tree-py/issues"
+"Protocol spec" = "https://github.com/forgesworn/nsec-tree/blob/main/PROTOCOL.md"
+Funding = "https://geyser.fund/project/forgesworn"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/nsec_tree"]
