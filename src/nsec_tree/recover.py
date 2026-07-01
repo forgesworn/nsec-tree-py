@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from .derive import Identity, derive
 from .root import TreeRoot
+from .persona import MAX_SCAN_RANGE, MAX_RECOVERY_PURPOSES
+from .errors import InvalidPurpose
 
 
 def recover(
@@ -18,4 +20,10 @@ def recover(
     Returns:
         A dict mapping each purpose to a list of derived identities.
     """
+    if not isinstance(purposes, list):
+        raise InvalidPurpose("purposes must be a list")
+    if len(purposes) > MAX_RECOVERY_PURPOSES:
+        raise InvalidPurpose(f"purposes must not exceed {MAX_RECOVERY_PURPOSES} entries")
+    if isinstance(scan_range, bool) or not isinstance(scan_range, int) or not (0 <= scan_range <= MAX_SCAN_RANGE):
+        raise InvalidPurpose(f"scan_range must be an int in [0, {MAX_SCAN_RANGE}]")
     return {p: [derive(root, p, i) for i in range(scan_range)] for p in purposes}

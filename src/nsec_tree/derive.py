@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from .keys import x_only_pubkey
 from .encoding import encode_nsec, encode_npub
 from .validate import validate_purpose
-from .errors import IndexOverflow
+from .errors import IndexOverflow, InvalidKey
 
 if TYPE_CHECKING:
     from .root import TreeRoot
@@ -47,4 +47,8 @@ def _materialise(secret_key: bytes, purpose: str, index: int) -> Identity:
 
 def derive(root: "TreeRoot", purpose: str, index: int = 0) -> Identity:
     validate_purpose(purpose)
+    if isinstance(index, bool) or not isinstance(index, int):
+        raise InvalidKey("index must be an integer")
+    if index < 0 or index > 0xFFFFFFFF:
+        raise IndexOverflow("index out of range [0, 0xFFFFFFFF]")
     return _materialise(root.secret, purpose, index)

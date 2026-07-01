@@ -8,6 +8,8 @@ _PROOF_UNSAFE = re.compile(r"[\x00-\x1f\x7f|]")  # C0/DEL control chars or the '
 
 
 def validate_purpose(purpose: str) -> None:
+    if not isinstance(purpose, str):
+        raise InvalidPurpose("purpose must be a string")
     raw = purpose.encode("utf-8")
     if len(raw) < 1:
         raise InvalidPurpose("purpose must be non-empty")

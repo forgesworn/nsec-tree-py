@@ -55,9 +55,10 @@ def _single_tag_value(tags: list[list[str]], name: str) -> str | None:
 
     Raises on duplicates to prevent "duplicate tag smuggling", where a crafted
     event contains two copies of an nsec-tree tag and different verifiers pick
-    different ones.
+    different ones.  Non-list/tuple entries are silently skipped so a stray
+    value in an untrusted event dict does not cause a TypeError.
     """
-    matches = [t for t in tags if len(t) > 0 and t[0] == name]
+    matches = [t for t in tags if isinstance(t, (list, tuple)) and len(t) > 0 and t[0] == name]
     if len(matches) > 1:
         raise NsecTreeError(f'Duplicate "{name}" tag: event must contain at most one')
     if not matches:
@@ -68,7 +69,14 @@ def _single_tag_value(tags: list[list[str]], name: str) -> str | None:
 def _event_fields(event: UnsignedEvent | Mapping[str, Any]) -> tuple[str, list[list[str]]]:
     if isinstance(event, UnsignedEvent):
         return event.pubkey, event.tags
-    return event["pubkey"], event["tags"]
+    try:
+        pubkey = event["pubkey"]
+        tags = event["tags"]
+    except KeyError as exc:
+        raise NsecTreeError(f"Event missing required field: {exc}") from exc
+    if not isinstance(tags, list):
+        raise NsecTreeError("Event 'tags' field must be a list")
+    return pubkey, tags
 
 
 def to_unsigned_event(proof: LinkageProof, created_at: int | None = None) -> UnsignedEvent:
@@ -153,6 +161,10 @@ def from_event(event: UnsignedEvent | Mapping[str, Any]) -> LinkageProof:
     if index_value is not None:
         if not _STRICT_UINT.match(index_value):
             raise NsecTreeError(f"Invalid index tag: {index_value}")
+        # Guard against CPython's int-parse limit (~4300 digits): a valid index
+        # is at most 0xFFFFFFFF = 4294967295 (10 digits).
+        if len(index_value) > 10:
+            raise NsecTreeError(f"Index exceeds maximum ({_MAX_INDEX}): {index_value[:20]}...")
         index = int(index_value)
         if index > _MAX_INDEX:
             raise NsecTreeError(f"Index exceeds maximum ({_MAX_INDEX}): {index_value}")

@@ -33,10 +33,12 @@ def _create_tree_root(secret: bytes) -> TreeRoot:
 
 
 def from_nsec(nsec: str | bytes) -> TreeRoot:
+    if not isinstance(nsec, (str, bytes, bytearray)):
+        raise InvalidKey("nsec must be a str or bytes")
     if isinstance(nsec, str):
         nsec_bytes = decode_nsec(nsec)
     else:
-        nsec_bytes = nsec
+        nsec_bytes = bytes(nsec)
     if len(nsec_bytes) != 32:
         raise InvalidKey("nsec must decode to 32 bytes")
     secret = hmac.new(nsec_bytes, _ROOT_LABEL, hashlib.sha256).digest()
