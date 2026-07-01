@@ -13,7 +13,7 @@ def test_decode_nsec_never_crashes(s):
     try:
         encoding.decode_nsec(s)
     except Exception as e:  # noqa: BLE001
-        assert isinstance(e, (NsecTreeError, InvalidKey, ValueError)), repr(e)
+        assert isinstance(e, (NsecTreeError, InvalidKey)), repr(e)
 
 
 @given(st.binary(min_size=32, max_size=32))
@@ -25,14 +25,28 @@ def test_encode_decode_nsec_roundtrip(b):
 def test_proof_from_dict_never_crashes_untyped(d):
     try:
         p = proof_from_dict(d)
+        # verify_proof swallows all internal exceptions (returns bool), so only proof_from_dict can raise here
         verify_proof(p)
     except Exception as e:  # noqa: BLE001
         assert isinstance(e, SAFE), repr(e)
 
 
-@given(st.lists(st.lists(st.text(), min_size=1, max_size=3), max_size=8))
-def test_from_event_only_typed_errors(tags):
+@given(pubkey=st.text(), tags=st.lists(st.lists(st.text(), min_size=1, max_size=3), max_size=8))
+def test_from_event_only_typed_errors(pubkey, tags):
     try:
-        from_event({"pubkey": "aa" * 32, "tags": tags})
+        from_event({"pubkey": pubkey, "tags": tags})
     except Exception as e:  # noqa: BLE001
         assert isinstance(e, NsecTreeError), repr(e)
+
+
+@given(st.text())
+def test_decode_npub_never_crashes(s):
+    try:
+        encoding.decode_npub(s)
+    except Exception as e:  # noqa: BLE001
+        assert isinstance(e, (NsecTreeError, InvalidKey)), repr(e)
+
+
+@given(st.binary(min_size=32, max_size=32))
+def test_encode_decode_npub_roundtrip(b):
+    assert encoding.decode_npub(encoding.encode_npub(b)) == b
