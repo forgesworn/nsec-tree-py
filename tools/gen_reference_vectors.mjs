@@ -4,15 +4,19 @@
  *
  * Imports from the local built dist (not npm) to guarantee exact v1.5.1 output
  * without network / registry fragility. The dist is already built.
+ *
+ * Requires the TS reference `nsec-tree` v1.5.1 checked out as a sibling of this
+ * repository (../../nsec-tree) with dist/ built (`npm run build`). Regenerate with:
+ *   node tools/gen_reference_vectors.mjs
  */
 import { writeFileSync } from 'node:fs'
-import { fromNsec } from '/Users/darren/WebstormProjects/nsec-tree/dist/root-nsec.js'
-import { fromMnemonic } from '/Users/darren/WebstormProjects/nsec-tree/dist/root-mnemonic.js'
-import { derive } from '/Users/darren/WebstormProjects/nsec-tree/dist/derive.js'
-import { deriveFromIdentity } from '/Users/darren/WebstormProjects/nsec-tree/dist/derive-identity.js'
-import { derivePersona, deriveFromPersona } from '/Users/darren/WebstormProjects/nsec-tree/dist/persona.js'
-import { createBlindProof, createFullProof } from '/Users/darren/WebstormProjects/nsec-tree/dist/proof.js'
-import { toUnsignedEvent } from '/Users/darren/WebstormProjects/nsec-tree/dist/event.js'
+import { fromNsec } from '../../nsec-tree/dist/root-nsec.js'
+import { fromMnemonic } from '../../nsec-tree/dist/root-mnemonic.js'
+import { derive } from '../../nsec-tree/dist/derive.js'
+import { deriveFromIdentity } from '../../nsec-tree/dist/derive-identity.js'
+import { derivePersona, deriveFromPersona } from '../../nsec-tree/dist/persona.js'
+import { createBlindProof, createFullProof } from '../../nsec-tree/dist/proof.js'
+import { toUnsignedEvent } from '../../nsec-tree/dist/event.js'
 
 const NSECS = ['01'.repeat(32), 'ab'.repeat(32), 'ff'.repeat(31) + 'ee']
 const PURPOSES = ['social', 'commerce', 'nostr:persona:writer', 'ünïcodë', 'x'.repeat(255)]

@@ -90,6 +90,16 @@ def test_persona_sub_matches_ts(c: dict) -> None:
 
 
 # ---------------------------------------------------------------------------
+# blind_proof — 3 cases: TS-generated Schnorr sigs over nsec-tree:own|… attestation
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("c", CASES["blind_proof"], ids=lambda c: c["nsec_hex"][:8])
+def test_blind_proof_matches_ts(c: dict) -> None:
+    proof = proof_from_dict({k: c[k] for k in ("masterPubkey", "childPubkey", "attestation", "signature")})
+    assert verify_proof(proof) is True
+
+
+# ---------------------------------------------------------------------------
 # full_proof — 3 cases: reconstruct from dict, verify signature
 # ---------------------------------------------------------------------------
 
