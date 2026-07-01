@@ -6,6 +6,7 @@ import re
 from typing import Any
 
 from .derive import Identity
+from .errors import InvalidPurpose
 from .keys import schnorr_sign, schnorr_verify
 from .root import TreeRoot
 from .validate import validate_proof_purpose
@@ -68,7 +69,7 @@ def canonical_attestation(proof: LinkageProof) -> str | None:
         return None
     try:
         validate_proof_purpose(proof.purpose)  # type: ignore[arg-type]
-    except Exception:
+    except InvalidPurpose:
         return None
     return _full_attestation(proof.master_pubkey, proof.child_pubkey, proof.purpose, proof.index)  # type: ignore[arg-type]
 

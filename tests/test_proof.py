@@ -174,6 +174,21 @@ def test_verify_proof_rejects_purpose_without_index():
     assert verify_proof(bad) is False
 
 
+def test_verify_proof_rejects_index_without_purpose():
+    root = _root()
+    child = _child(root)
+    proof = create_blind_proof(root, child)
+    bad = LinkageProof(
+        master_pubkey=proof.master_pubkey,
+        child_pubkey=proof.child_pubkey,
+        attestation=proof.attestation,
+        signature=proof.signature,
+        purpose=None,       # index set but purpose is None → structurally invalid
+        index=0,
+    )
+    assert verify_proof(bad) is False
+
+
 # ---------------------------------------------------------------------------
 # Wire format serialisation
 # ---------------------------------------------------------------------------
