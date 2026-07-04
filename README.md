@@ -421,7 +421,7 @@ Report anything you find via [issues](https://github.com/forgesworn/nsec-tree-py
 
 MIT-licensed. If nsec-tree-py saves you time, consider a tip:
 
-- ⚡ thedonkey@strike.me · https://strike.me/thedonkey
+- ⚡ profusemeat89@walletofsatoshi.com · https://strike.me/thedonkey
 - https://ko-fi.com/brays
 - https://geyser.fund/project/forgesworn
 
