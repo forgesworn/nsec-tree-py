@@ -3,16 +3,16 @@ from __future__ import annotations
 
 import pytest
 
-from nsec_tree import from_nsec, derive
+from nsec_tree import derive, from_nsec
 from nsec_tree.errors import InvalidPurpose
 from nsec_tree.proof import (
     LinkageProof,
     canonical_attestation,
     create_blind_proof,
     create_full_proof,
-    verify_proof,
-    proof_to_dict,
     proof_from_dict,
+    proof_to_dict,
+    verify_proof,
 )
 
 # Standard test vectors: nsec_bytes = 0x01 * 32

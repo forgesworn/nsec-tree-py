@@ -1,8 +1,8 @@
 """Linkage proofs — PROTOCOL.md §5 (blind and full Schnorr attestations)."""
 from __future__ import annotations
 
-from dataclasses import dataclass
 import re
+from dataclasses import dataclass
 from typing import Any
 
 from .derive import Identity
@@ -89,7 +89,8 @@ def verify_proof(proof: LinkageProof) -> bool:
             bytes.fromhex(proof.signature),
             attestation.encode("utf-8"),
         )
-    except Exception:
+    except Exception:  # noqa: BLE001 - verification must never raise; any
+        # malformed field, bad hex or library error means the proof is not valid.
         return False
 
 

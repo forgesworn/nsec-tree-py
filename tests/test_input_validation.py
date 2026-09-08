@@ -14,13 +14,13 @@ from __future__ import annotations
 
 import pytest
 
-from nsec_tree.root import from_nsec
 from nsec_tree.derive import derive
-from nsec_tree.recover import recover
+from nsec_tree.errors import IndexOverflow, InvalidKey, InvalidPurpose, NsecTreeError
 from nsec_tree.event import from_event, to_unsigned_event
+from nsec_tree.persona import MAX_RECOVERY_PURPOSES, MAX_SCAN_RANGE
 from nsec_tree.proof import create_full_proof
-from nsec_tree.errors import NsecTreeError, InvalidKey, InvalidPurpose, IndexOverflow
-from nsec_tree.persona import MAX_SCAN_RANGE, MAX_RECOVERY_PURPOSES
+from nsec_tree.recover import recover
+from nsec_tree.root import from_nsec
 
 _NSEC_BYTES = bytes.fromhex("01" * 32)
 ROOT = from_nsec(_NSEC_BYTES)

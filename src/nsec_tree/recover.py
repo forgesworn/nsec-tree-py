@@ -2,9 +2,9 @@
 from __future__ import annotations
 
 from .derive import Identity, derive
-from .root import TreeRoot
-from .persona import MAX_SCAN_RANGE, MAX_RECOVERY_PURPOSES
 from .errors import InvalidPurpose
+from .persona import MAX_RECOVERY_PURPOSES, MAX_SCAN_RANGE
+from .root import TreeRoot
 
 
 def recover(

@@ -1,9 +1,11 @@
 """Property/fuzz tests — parsers must only raise typed errors and round-trips must hold."""
-from hypothesis import given, strategies as st
+from hypothesis import given
+from hypothesis import strategies as st
+
 from nsec_tree import encoding
-from nsec_tree.errors import NsecTreeError, InvalidKey
-from nsec_tree.proof import proof_from_dict, verify_proof
+from nsec_tree.errors import InvalidKey, NsecTreeError
 from nsec_tree.event import from_event
+from nsec_tree.proof import proof_from_dict, verify_proof
 
 SAFE = (NsecTreeError, InvalidKey, KeyError)  # KeyError = missing wire field, acceptable for dict input
 

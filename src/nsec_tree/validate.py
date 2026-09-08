@@ -1,5 +1,6 @@
 """Purpose-string validation — PROTOCOL.md §3."""
 from __future__ import annotations
+
 import re
 
 from .errors import InvalidPurpose

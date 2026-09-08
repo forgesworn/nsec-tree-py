@@ -1,14 +1,15 @@
 """Child key derivation — PROTOCOL.md §2 (HMAC message) + §4 (curve-order retry)."""
 from __future__ import annotations
-import hmac
+
 import hashlib
+import hmac
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from .keys import x_only_pubkey
-from .encoding import encode_nsec, encode_npub
-from .validate import validate_purpose
+from .encoding import encode_npub, encode_nsec
 from .errors import IndexOverflow, InvalidKey
+from .keys import x_only_pubkey
+from .validate import validate_purpose
 
 if TYPE_CHECKING:
     from .root import TreeRoot
@@ -45,7 +46,7 @@ def _materialise(secret_key: bytes, purpose: str, index: int) -> Identity:
     return Identity(priv, pub, encode_nsec(priv), encode_npub(pub), purpose, actual)
 
 
-def derive(root: "TreeRoot", purpose: str, index: int = 0) -> Identity:
+def derive(root: TreeRoot, purpose: str, index: int = 0) -> Identity:
     validate_purpose(purpose)
     if isinstance(index, bool) or not isinstance(index, int):
         raise InvalidKey("index must be an integer")

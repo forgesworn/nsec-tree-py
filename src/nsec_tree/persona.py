@@ -1,11 +1,12 @@
 """Personas and arbitrary-depth hierarchy — PROTOCOL.md §3.1."""
 from __future__ import annotations
+
 import re
 from dataclasses import dataclass
 
-from .root import TreeRoot, from_nsec
 from .derive import Identity, derive
 from .errors import InvalidPurpose
+from .root import TreeRoot, from_nsec
 
 _PERSONA_PREFIX = "nostr:persona:"
 _PERSONA_UNSAFE = re.compile(r"[\x00-\x1f\x7f|]")

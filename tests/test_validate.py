@@ -1,6 +1,7 @@
 import pytest
-from nsec_tree.validate import validate_purpose, validate_proof_purpose
+
 from nsec_tree.errors import InvalidPurpose
+from nsec_tree.validate import validate_proof_purpose, validate_purpose
 
 
 def test_valid_purposes():

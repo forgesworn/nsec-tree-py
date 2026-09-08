@@ -1,5 +1,5 @@
 """Tests for NIP-19 bech32 encoding."""
-from nsec_tree.encoding import encode_npub, encode_nsec, decode_npub, decode_nsec
+from nsec_tree.encoding import decode_npub, decode_nsec, encode_npub, encode_nsec
 
 CPRIV = bytes.fromhex("98e98b476eab3c2bcb5020e4a679a41b74eebfb30a07944c4361c906501265e7")
 CPUB  = bytes.fromhex("cdc4cd2a01ba1b8afd3299b66c38d13043a19acb687c334f0527cffaf464b372")

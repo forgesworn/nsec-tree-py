@@ -1,73 +1,73 @@
 """nsec-tree — deterministic Nostr sub-identity derivation (NIP-IDENTITY-TREES)."""
-from .root import from_nsec, TreeRoot, zeroise
+from . import encoding
+from .derive import Identity, derive
+from .errors import IndexOverflow, InvalidKey, InvalidPurpose, NsecTreeError
+from .event import (
+    NSEC_TREE_D_PREFIX,
+    NSEC_TREE_EVENT_KIND,
+    UnsignedEvent,
+    from_event,
+    to_unsigned_event,
+)
 from .mnemonic import from_mnemonic
-from .derive import derive, Identity
 from .persona import (
+    DEFAULT_PERSONA_NAMES,
+    DEFAULT_SCAN_RANGE,
+    MAX_INDEX,
+    MAX_RECOVERY_PURPOSES,
+    MAX_SCAN_RANGE,
     Persona,
-    derive_persona,
     derive_from_identity,
     derive_from_persona,
+    derive_persona,
     recover_personas,
     validate_persona_name,
-    DEFAULT_PERSONA_NAMES,
-    MAX_INDEX,
-    DEFAULT_SCAN_RANGE,
-    MAX_SCAN_RANGE,
-    MAX_RECOVERY_PURPOSES,
 )
-from .recover import recover
-from .errors import NsecTreeError, InvalidKey, InvalidPurpose, IndexOverflow
 from .proof import (
     LinkageProof,
     create_blind_proof,
     create_full_proof,
-    verify_proof,
-    proof_to_dict,
     proof_from_dict,
+    proof_to_dict,
+    verify_proof,
 )
-from .event import (
-    UnsignedEvent,
-    to_unsigned_event,
-    from_event,
-    NSEC_TREE_EVENT_KIND,
-    NSEC_TREE_D_PREFIX,
-)
-from . import encoding
+from .recover import recover
+from .root import TreeRoot, from_nsec, zeroise
 
 __version__ = "1.0.1"
 __all__ = [
-    "from_nsec",
-    "from_mnemonic",
-    "TreeRoot",
-    "zeroise",
-    "derive",
-    "Identity",
-    "Persona",
-    "derive_persona",
-    "derive_from_identity",
-    "derive_from_persona",
-    "recover_personas",
-    "validate_persona_name",
     "DEFAULT_PERSONA_NAMES",
-    "MAX_INDEX",
     "DEFAULT_SCAN_RANGE",
-    "MAX_SCAN_RANGE",
+    "MAX_INDEX",
     "MAX_RECOVERY_PURPOSES",
-    "recover",
-    "encoding",
-    "NsecTreeError",
+    "MAX_SCAN_RANGE",
+    "NSEC_TREE_D_PREFIX",
+    "NSEC_TREE_EVENT_KIND",
+    "Identity",
+    "IndexOverflow",
     "InvalidKey",
     "InvalidPurpose",
-    "IndexOverflow",
     "LinkageProof",
+    "NsecTreeError",
+    "Persona",
+    "TreeRoot",
+    "UnsignedEvent",
     "create_blind_proof",
     "create_full_proof",
-    "verify_proof",
-    "proof_to_dict",
-    "proof_from_dict",
-    "UnsignedEvent",
-    "to_unsigned_event",
+    "derive",
+    "derive_from_identity",
+    "derive_from_persona",
+    "derive_persona",
+    "encoding",
     "from_event",
-    "NSEC_TREE_EVENT_KIND",
-    "NSEC_TREE_D_PREFIX",
+    "from_mnemonic",
+    "from_nsec",
+    "proof_from_dict",
+    "proof_to_dict",
+    "recover",
+    "recover_personas",
+    "to_unsigned_event",
+    "validate_persona_name",
+    "verify_proof",
+    "zeroise",
 ]

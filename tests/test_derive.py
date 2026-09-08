@@ -1,6 +1,6 @@
 """Tests for derive.py — PROTOCOL.md §2 + §4 vectors."""
-from nsec_tree.root import from_nsec
 from nsec_tree.derive import derive
+from nsec_tree.root import from_nsec
 
 ROOT = from_nsec(bytes.fromhex("01" * 32))
 

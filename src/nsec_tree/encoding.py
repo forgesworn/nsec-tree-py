@@ -1,6 +1,8 @@
 """NIP-19 bech32 encoding of Nostr keys (nsec/npub)."""
 from __future__ import annotations
+
 import bech32
+
 from .errors import InvalidKey
 
 

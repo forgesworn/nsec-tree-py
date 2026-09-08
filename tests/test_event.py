@@ -19,11 +19,11 @@ from nsec_tree import (
 )
 from nsec_tree.errors import NsecTreeError
 from nsec_tree.proof import (
+    LinkageProof,
     create_blind_proof,
     create_full_proof,
     proof_from_dict,
     verify_proof,
-    LinkageProof,
 )
 
 _NSEC_BYTES = bytes.fromhex("01" * 32)

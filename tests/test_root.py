@@ -1,7 +1,7 @@
 """Tests for root.py — PROTOCOL.md §1.2 vectors."""
-from nsec_tree.root import from_nsec, zeroise
-from nsec_tree.encoding import encode_nsec
 from nsec_tree.derive import derive
+from nsec_tree.encoding import encode_nsec
+from nsec_tree.root import from_nsec, zeroise
 
 
 def test_from_nsec_bytes_vector_1():

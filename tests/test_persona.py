@@ -1,9 +1,17 @@
 """Tests for persona.py — personas + arbitrary-depth hierarchy."""
 import pytest
+
 from nsec_tree import (
-    from_nsec, derive, Persona, derive_persona, derive_from_identity,
-    derive_from_persona, recover_personas, DEFAULT_PERSONA_NAMES,
-    MAX_SCAN_RANGE, MAX_RECOVERY_PURPOSES,
+    DEFAULT_PERSONA_NAMES,
+    MAX_RECOVERY_PURPOSES,
+    MAX_SCAN_RANGE,
+    Persona,
+    derive,
+    derive_from_identity,
+    derive_from_persona,
+    derive_persona,
+    from_nsec,
+    recover_personas,
 )
 from nsec_tree.errors import InvalidPurpose
 

@@ -1,10 +1,11 @@
 """Tests for the mnemonic (BIP-39/32) path — PROTOCOL.md §1.1, vectors §6.4-6.6."""
 import pytest
-from nsec_tree import from_nsec, derive, derive_persona
+
+from nsec_tree import derive, derive_persona, from_nsec
 from nsec_tree.errors import NsecTreeError
 
 mnemonic = pytest.importorskip("mnemonic")  # skip if the [mnemonic] extra is absent
-from nsec_tree import from_mnemonic  # noqa: E402
+from nsec_tree import from_mnemonic
 
 ABANDON = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
 

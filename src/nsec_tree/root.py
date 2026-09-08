@@ -1,13 +1,14 @@
 """Tree root from an nsec — PROTOCOL.md §1.2."""
 from __future__ import annotations
-import hmac
+
 import hashlib
+import hmac
 from dataclasses import dataclass
 
-from .keys import x_only_pubkey
-from .encoding import encode_npub, decode_nsec
 from .derive import Identity
+from .encoding import decode_nsec, encode_npub
 from .errors import InvalidKey
+from .keys import x_only_pubkey
 
 _ROOT_LABEL = b"nsec-tree-root"
 
