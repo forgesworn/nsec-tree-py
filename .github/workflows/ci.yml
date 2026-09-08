@@ -11,14 +11,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        include:
+          - python-version: "3.11"
+            extras: "dev,mnemonic"
+          - python-version: "3.12"
+            extras: "dev,mnemonic"
+          # bip32 caps coincurve below 21, and coincurve 20 ships no 3.13 wheel,
+          # so the mnemonic extra tries to build coincurve from source and dies
+          # inside scikit-build-core. The core package installs fine here because
+          # coincurve 21 does have a 3.13 wheel, and the mnemonic tests skip
+          # themselves via importorskip, so 3.13 still gets a real run.
+          - python-version: "3.13"
+            extras: "dev"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install (with mnemonic extra)
-        run: pip install -e ".[dev,mnemonic]"
+      - name: Install
+        run: pip install -e ".[${{ matrix.extras }}]"
       - name: Lint (ruff)
         run: ruff check .
       - name: Type-check (mypy)
