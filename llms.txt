@@ -11,6 +11,12 @@
 Install: `pip install nsec-tree` (add the `[mnemonic]` extra — `pip install nsec-tree[mnemonic]` —
 for the BIP-39 entry point). Python 3.11+. MIT. Import as `import nsec_tree`.
 
+## ForgeSworn ecosystem
+
+- [ForgeSworn library guide](https://forgesworn.dev/llms.txt): Find related libraries, tools and integration guides by task and runtime.
+- [ForgeSworn on GitHub](https://github.com/forgesworn): Browse the organisation’s public repositories.
+- [Project source](https://github.com/forgesworn/nsec-tree-py): Canonical source repository, documentation and release information.
+
 ## Core model
 
 - Build a `TreeRoot` once from a master secret, then derive any number of child `Identity` objects from it.
