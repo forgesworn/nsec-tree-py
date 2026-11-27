@@ -1,6 +1,7 @@
 """Additive Signet vectors copied unchanged from nsec-tree/test/fixtures."""
 import json
 from pathlib import Path
+
 from nsec_tree import derive, from_nsec, zeroise
 
 
